@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="7.0.0" />
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
     <PackageReference Include="Scrutor" Version="4.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
@@ -18,6 +20,7 @@
     <ProjectReference Include="..\DbRepository\DapperRepository.csproj" />
     <ProjectReference Include="..\EFcoreRepository\EFcoreRepository.csproj" />
     <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
+    <ProjectReference Include="..\Extration\Extration.csproj" />
     <ProjectReference Include="..\MongodbFactory\MongodbRepository.csproj" />
     <ProjectReference Include="..\SqlSugar\SqlSugarRepository.csproj" />
   </ItemGroup>

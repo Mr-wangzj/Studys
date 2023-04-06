@@ -79,5 +79,43 @@ namespace RedisRepository
             else
                 return _db.StringSet(key, v, expireTime.Value);
         }
+
+        public async Task<long> RightPush(RedisKey queueName, RedisValue redisValue)
+        {
+            return  await _db.ListRightPushAsync (queueName, redisValue);
+        }
+
+        public async Task<long> LeftPush(RedisKey queueName, RedisValue redisValue)
+        {
+            return await _db.ListLeftPushAsync(queueName, redisValue);
+        }
+
+        public async Task<long> Push(string topticName, string message)
+        {
+            ISubscriber subscriber = _multiplexer.GetSubscriber();
+            long publishLong = await subscriber.PublishAsync(topticName, message);
+            return publishLong;
+        }
+
+        public async Task<object> SubScriper(string topticName, Action<RedisChannel, RedisValue> handler = null)
+        {
+            var msgs = "";
+         var chanle= await _multiplexer.GetSubscriber().SubscribeAsync(topticName);
+            chanle.OnMessage(c=>{
+                if (handler != null)
+                {
+                    string redisChannel = c.Channel;
+                    string msg = c.Message;
+                    handler.Invoke(redisChannel, msg);
+                    msgs=msg;
+                }
+                else
+                {
+                    string msg = c.Message;
+                    msgs=msg;
+                }
+            });
+            return msgs;
+        }
     }
 }

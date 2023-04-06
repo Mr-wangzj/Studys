@@ -44,5 +44,11 @@ namespace APIfirst.Controllers
         {
             return _Icache.Getcache<Book>("book");
         }
+
+        [HttpPost]
+        public async Task<long>  publsh(string topticName ,string  msg)
+        {
+            return await _Icache.Push(topticName, msg);
+        }
     }
 }

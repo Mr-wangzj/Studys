@@ -28,11 +28,12 @@ builder.Services.AddTransient<IQwer, Test>();
 //获取接口实例
 var d = builder.Services.BuildServiceProvider().GetService<IQwer>();
 
+builder.Services.AddMemoryCache();// 内存缓存
 //autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(
     builder => {
-        builder.RegisterType<Rediscache>().As<Icache>();
+        builder.RegisterType<Rediscache>().As<Icache>(); //注册redis
     }
  );
 

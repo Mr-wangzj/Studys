@@ -3,6 +3,10 @@ using ApiIService;
 using ApiService;
 using MongodbRepository;
 using System.Reflection;
+using Autofac;
+using Autofac.Extras.DynamicProxy;
+using Autofac.Extensions.DependencyInjection;
+using RedisRepository;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +28,13 @@ builder.Services.AddTransient<IQwer, Test>();
 //获取接口实例
 var d = builder.Services.BuildServiceProvider().GetService<IQwer>();
 
-
+//autofac
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(
+    builder => {
+        builder.RegisterType<Rediscache>().As<Icache>();
+    }
+ );
 
 
 #region Scrutor 扩展

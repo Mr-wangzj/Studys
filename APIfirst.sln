@@ -27,7 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elastsearch", "Elastsearch\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extration", "Extration\Extration.csproj", "{017BAE2D-A27C-4229-BD30-8E4F26864AFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisRepository", "RedisRepository\RedisRepository.csproj", "{81EC91F1-EA2F-43A2-BA9C-9CE134B45A33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RedisRepository", "RedisRepository\RedisRepository.csproj", "{81EC91F1-EA2F-43A2-BA9C-9CE134B45A33}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cache", "Cache", "{5BE3A751-C520-46DA-B940-556C685CBA50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemCacheRep", "MemCacheRep\MemCacheRep.csproj", "{C25EBEB6-2823-4644-9EFD-25ADC28DBC56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +83,10 @@ Global
 		{81EC91F1-EA2F-43A2-BA9C-9CE134B45A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81EC91F1-EA2F-43A2-BA9C-9CE134B45A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81EC91F1-EA2F-43A2-BA9C-9CE134B45A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C25EBEB6-2823-4644-9EFD-25ADC28DBC56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C25EBEB6-2823-4644-9EFD-25ADC28DBC56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C25EBEB6-2823-4644-9EFD-25ADC28DBC56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C25EBEB6-2823-4644-9EFD-25ADC28DBC56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +97,7 @@ Global
 		{76EB7159-1E31-4172-904B-6A56D84649E4} = {0074D44C-5941-471E-B144-4CC3A7D6FC1B}
 		{635803A7-7F60-42F2-BD27-3C8BF6698E32} = {90A72F03-BA30-4BBF-8645-3AF143EC30FD}
 		{81EC91F1-EA2F-43A2-BA9C-9CE134B45A33} = {90A72F03-BA30-4BBF-8645-3AF143EC30FD}
+		{C25EBEB6-2823-4644-9EFD-25ADC28DBC56} = {5BE3A751-C520-46DA-B940-556C685CBA50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8570625E-0A20-4A9B-92EE-2E0BD86E7E13}

@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using RedisRepository;
 
 namespace APIfirst.Controllers
@@ -8,10 +9,12 @@ namespace APIfirst.Controllers
     [Route("[controller]/[action]")]
     public class RedisController : ControllerBase
     {
+        private readonly IDistributedCache _cache;
         private readonly Icache _Icache;
-        public RedisController(Icache Icache)
+        public RedisController(Icache Icache, IDistributedCache cache)
         {
             _Icache=Icache;
+            _cache=cache;
         }
         [HttpPost]
         public bool setkey()
@@ -50,5 +53,22 @@ namespace APIfirst.Controllers
         {
             return await _Icache.Push(topticName, msg);
         }
+
+
+        #region 分布式缓存
+
+       
+
+        [HttpPost]
+        public void Rsetkey()
+        {
+             _cache.SetString("FM", "mdzz");
+        }
+        [HttpGet]
+        public string Rgetkey()
+        {
+            return _cache.GetString("FM");
+        }
+        #endregion
     }
 }

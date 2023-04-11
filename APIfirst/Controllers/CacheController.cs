@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace APIfirst.Controllers
@@ -8,12 +9,14 @@ namespace APIfirst.Controllers
     [ApiController]
     public class CacheController : ControllerBase
     {
+        private readonly IDistributedCache _cache;
         private readonly IMemoryCache _memoryCache;
 
-        public CacheController(IMemoryCache memoryCache)
+        public CacheController(IMemoryCache memoryCache, IDistributedCache cache)
         {
             _memoryCache=memoryCache;
-        }
+            _cache=cache;
+        } 
 
         [HttpPost]
         public Task<string> madd(string keys, string datas)

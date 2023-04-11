@@ -36,6 +36,27 @@ builder.Host.ConfigureContainer<ContainerBuilder>(
         builder.RegisterType<Rediscache>().As<Icache>(); //×¢²áredis
     }
  );
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.InstanceName = "api_"; // 
+    options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions()
+    {
+        EndPoints = { { "127.0.0.1", 6379 }, { "127.0.0.1", 35680 }, { "127.0.0.1", 35681 } },
+        //ServiceName = "mymaster",
+        DefaultDatabase = 2,
+        AllowAdmin = true,
+        AbortOnConnectFail = false,
+        KeepAlive = 180,
+        TieBreaker = "",
+        //CommandMap = StackExchange.Redis.CommandMap.Create(new HashSet<string>//ÉÚ±øÄ£Ê½£¬ EXCLUDE a few commands
+        //            {
+        //                "INFO", "CONFIG", "CLUSTER","PING", "ECHO", "CLIENT"
+        //            }, available: false),
+        //CommandMap = StackExchange.Redis.CommandMap.Sentinel,
+    };
+
+
+});
 
 
 #region Scrutor À©Õ¹

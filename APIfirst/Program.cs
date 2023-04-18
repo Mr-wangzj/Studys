@@ -12,7 +12,6 @@ using Serilog;
 try
 {
 
-
     WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
@@ -20,6 +19,7 @@ try
     {
         logger.ReadFrom.Configuration(context.Configuration);
         logger.Enrich.FromLogContext();
+        //logger.Enrich.WithThreadName();
     });
 
     builder.Services.AddControllers();
@@ -109,6 +109,7 @@ try
 
     app.MapControllers();
 
+    app.UseSerilogRequestLogging();
     app.Run();
 }
 catch (Exception ex)

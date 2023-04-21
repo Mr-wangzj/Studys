@@ -1,4 +1,3 @@
-
 using ApiIService;
 using ApiService;
 using MongodbRepository;
@@ -8,19 +7,22 @@ using Autofac.Extras.DynamicProxy;
 using Autofac.Extensions.DependencyInjection;
 using RedisRepository;
 using Serilog;
+using NLog.Web;
 
 try
 {
-
     WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
-    // Add services to the container.
-    builder.Host.UseSerilog((context, logger) =>//注册Serilog
-    {
-        logger.ReadFrom.Configuration(context.Configuration);
-        logger.Enrich.FromLogContext();
-        //logger.Enrich.WithThreadName();
-    });
+    // 使用serilog
+    //builder.Host.UseSerilog((context, logger) =>//注册Serilog
+    //{
+    //    logger.ReadFrom.Configuration(context.Configuration);
+    //    logger.Enrich.FromLogContext();
+    //    //logger.Enrich.WithThreadName();
+    //});
+
+    //Nlog
+    builder.Logging.AddNLog("/Nlog.config");
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -49,7 +51,7 @@ try
      );
     builder.Services.AddStackExchangeRedisCache(options =>
     {
-        options.InstanceName = "api_"; // 
+        options.InstanceName = "api_"; //
         options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions()
         {
             EndPoints = { { "127.0.0.1", 6379 }, { "127.0.0.1", 35680 }, { "127.0.0.1", 35681 } },
@@ -65,13 +67,10 @@ try
             //            }, available: false),
             //CommandMap = StackExchange.Redis.CommandMap.Sentinel,
         };
-
-
     });
 
-
-
     #region Scrutor 扩展
+
     //builder.Services.Scan(
     //     //Program 类所在的程序集
     // s =>
@@ -92,7 +91,8 @@ try
     ////生命周期方式 = AddScoped
     //.WithScopedLifetime()
     //);
-    #endregion
+
+    #endregion Scrutor 扩展
 
     var app = builder.Build();
 
@@ -109,7 +109,7 @@ try
 
     app.MapControllers();
 
-    app.UseSerilogRequestLogging();
+    //app.UseSerilogRequestLogging();
     app.Run();
 }
 catch (Exception ex)

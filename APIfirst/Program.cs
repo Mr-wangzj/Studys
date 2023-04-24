@@ -8,21 +8,53 @@ using Autofac.Extensions.DependencyInjection;
 using RedisRepository;
 using Serilog;
 using NLog.Web;
+using Serilog.Sinks.Elasticsearch;
+using Serilog.Events;
 
 try
 {
     WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
-    // 使用serilog
-    //builder.Host.UseSerilog((context, logger) =>//注册Serilog
-    //{
-    //    logger.ReadFrom.Configuration(context.Configuration);
-    //    logger.Enrich.FromLogContext();
-    //    //logger.Enrich.WithThreadName();
-    //});
+    //使用serilog
+    builder.Host.UseSerilog((context, logger) =>//注册Serilog
+    {
+        logger.ReadFrom.Configuration(context.Configuration);
+        logger.Enrich.FromLogContext();
+        //logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200/"))
+        //{
+        //    //OverwriteTemplate和TypeName一定要加，不然ES8无法写入日志
+
+        //    IndexFormat = "test-{0:yyyy.MM.dd}",
+        //    //IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+        //    AutoRegisterTemplate = true,
+        //    OverwriteTemplate = true,
+        //    //TemplateName = "",
+        //    FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
+        //    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv8,
+        //    TypeName = null,
+        //    MinimumLogEventLevel = LogEventLevel.Verbose,
+        //    EmitEventFailure = EmitEventFailureHandling.RaiseCallback,
+        //    BatchAction = ElasticOpType.Create,
+        //    BatchPostingLimit = 50,//一次批量发送日志数量，默认50
+        //    //ModifyConnectionSettings =
+        //    //                conn =>
+        //    //                {
+        //    //                    //conn.BasicAuthentication("elastic", "123456");
+        //    //                    conn.ServerCertificateValidationCallback((source, certificate, chain, sslPolicyErrors) => false);
+        //    //                    return conn;
+        //    //                }
+        //});
+
+        //logstash - es
+        //发送至logstash地址；这里不用http方法是因为官方文档描述此方法在网路延宕重启时并不会保留数据
+        //会生成两个Buffer存储文件，通过内容发送请求
+        logger.WriteTo.DurableHttpUsingFileSizeRolledBuffers("http://localhost:9650");
+
+        //logger.Enrich.WithThreadName();
+    });
 
     //Nlog
-    builder.Logging.AddNLog("/Nlog.config");
+    //builder.Logging.AddNLog("/Nlog.config");
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

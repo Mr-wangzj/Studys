@@ -25,6 +25,7 @@
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Http" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.RabbitMQ" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 

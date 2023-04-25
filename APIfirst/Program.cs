@@ -10,6 +10,9 @@ using Serilog;
 using NLog.Web;
 using Serilog.Sinks.Elasticsearch;
 using Serilog.Events;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.RabbitMQ;
+using RabbitMQ.Client;
 
 try
 {
@@ -48,7 +51,21 @@ try
         //logstash - es
         //发送至logstash地址；这里不用http方法是因为官方文档描述此方法在网路延宕重启时并不会保留数据
         //会生成两个Buffer存储文件，通过内容发送请求
-        logger.WriteTo.DurableHttpUsingFileSizeRolledBuffers("http://localhost:9650");
+        //logger.WriteTo.DurableHttpUsingFileSizeRolledBuffers("http://localhost:9650");
+
+        ////log - rbmq - logstash -es
+        //logger.WriteTo.RabbitMQ((clientConfiguration, sinkConfiguration) =>
+        //{
+        //    clientConfiguration.Hostnames.Add("127.0.0.1");
+        //    clientConfiguration.Username = "guest";
+        //    clientConfiguration.Password = "guest";
+        //    clientConfiguration.Exchange = "rqlogstashExchange";
+        //    clientConfiguration.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
+        //    clientConfiguration.DeliveryMode = RabbitMQDeliveryMode.Durable;
+        //    clientConfiguration.RouteKey = "rqlogstash";
+        //    clientConfiguration.Port = 5672;
+        //    sinkConfiguration.TextFormatter = new JsonFormatter();
+        //});
 
         //logger.Enrich.WithThreadName();
     });

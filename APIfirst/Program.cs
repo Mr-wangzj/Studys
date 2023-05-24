@@ -8,6 +8,8 @@ using Autofac.Extras.DynamicProxy;
 using Autofac.Extensions.DependencyInjection;
 using RedisRepository;
 using Serilog;
+using APIfirst;
+using Microsoft.AspNetCore.Http.Connections;
 
 try
 {
@@ -71,6 +73,8 @@ try
 
 
 
+    //添加signalr 服务
+    builder.Services.AddSignalR();
     #region Scrutor 扩展
     //builder.Services.Scan(
     //     //Program 类所在的程序集
@@ -102,9 +106,16 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
-
+  
+    app.MapHub<SignalRhub>("/ChatHub", options =>
+    {
+        options.Transports =
+            HttpTransportType.WebSockets |
+            HttpTransportType.LongPolling;
+    });
     //app.UseHttpsRedirection();
-
+   // 开启静态文件  将客户端代码写入wwwroot中  防止跨域
+    app.UseStaticFiles();
     app.UseAuthorization();
 
     app.MapControllers();

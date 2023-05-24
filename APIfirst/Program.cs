@@ -13,6 +13,8 @@ using Serilog.Events;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.RabbitMQ;
 using RabbitMQ.Client;
+using APIfirst;
+using Microsoft.AspNetCore.Http.Connections;
 
 try
 {

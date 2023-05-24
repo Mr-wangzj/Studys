@@ -1,4 +1,3 @@
-
 using ApiIService;
 using ApiService;
 using MongodbRepository;
@@ -8,21 +7,71 @@ using Autofac.Extras.DynamicProxy;
 using Autofac.Extensions.DependencyInjection;
 using RedisRepository;
 using Serilog;
-using APIfirst;
-using Microsoft.AspNetCore.Http.Connections;
+using NLog.Web;
+using Serilog.Sinks.Elasticsearch;
+using Serilog.Events;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.RabbitMQ;
+using RabbitMQ.Client;
 
 try
 {
-
     WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
-    // Add services to the container.
+    //使用serilog
     builder.Host.UseSerilog((context, logger) =>//注册Serilog
     {
         logger.ReadFrom.Configuration(context.Configuration);
         logger.Enrich.FromLogContext();
+        //logger.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200/"))
+        //{
+        //    //OverwriteTemplate和TypeName一定要加，不然ES8无法写入日志
+
+        //    IndexFormat = "test-{0:yyyy.MM.dd}",
+        //    //IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+        //    AutoRegisterTemplate = true,
+        //    OverwriteTemplate = true,
+        //    //TemplateName = "",
+        //    FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
+        //    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv8,
+        //    TypeName = null,
+        //    MinimumLogEventLevel = LogEventLevel.Verbose,
+        //    EmitEventFailure = EmitEventFailureHandling.RaiseCallback,
+        //    BatchAction = ElasticOpType.Create,
+        //    BatchPostingLimit = 50,//一次批量发送日志数量，默认50
+        //    //ModifyConnectionSettings =
+        //    //                conn =>
+        //    //                {
+        //    //                    //conn.BasicAuthentication("elastic", "123456");
+        //    //                    conn.ServerCertificateValidationCallback((source, certificate, chain, sslPolicyErrors) => false);
+        //    //                    return conn;
+        //    //                }
+        //});
+
+        //logstash - es
+        //发送至logstash地址；这里不用http方法是因为官方文档描述此方法在网路延宕重启时并不会保留数据
+        //会生成两个Buffer存储文件，通过内容发送请求
+        //logger.WriteTo.DurableHttpUsingFileSizeRolledBuffers("http://localhost:9650");
+
+        ////log - rbmq - logstash -es
+        //logger.WriteTo.RabbitMQ((clientConfiguration, sinkConfiguration) =>
+        //{
+        //    clientConfiguration.Hostnames.Add("127.0.0.1");
+        //    clientConfiguration.Username = "guest";
+        //    clientConfiguration.Password = "guest";
+        //    clientConfiguration.Exchange = "rqlogstashExchange";
+        //    clientConfiguration.ExchangeType = RabbitMQ.Client.ExchangeType.Direct;
+        //    clientConfiguration.DeliveryMode = RabbitMQDeliveryMode.Durable;
+        //    clientConfiguration.RouteKey = "rqlogstash";
+        //    clientConfiguration.Port = 5672;
+        //    sinkConfiguration.TextFormatter = new JsonFormatter();
+        //});
+
         //logger.Enrich.WithThreadName();
     });
+
+    //Nlog
+    //builder.Logging.AddNLog("/Nlog.config");
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -51,7 +100,7 @@ try
      );
     builder.Services.AddStackExchangeRedisCache(options =>
     {
-        options.InstanceName = "api_"; // 
+        options.InstanceName = "api_"; //
         options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions()
         {
             EndPoints = { { "127.0.0.1", 6379 }, { "127.0.0.1", 35680 }, { "127.0.0.1", 35681 } },
@@ -67,8 +116,6 @@ try
             //            }, available: false),
             //CommandMap = StackExchange.Redis.CommandMap.Sentinel,
         };
-
-
     });
 
 
@@ -76,6 +123,7 @@ try
     //添加signalr 服务
     builder.Services.AddSignalR();
     #region Scrutor 扩展
+
     //builder.Services.Scan(
     //     //Program 类所在的程序集
     // s =>
@@ -96,7 +144,8 @@ try
     ////生命周期方式 = AddScoped
     //.WithScopedLifetime()
     //);
-    #endregion
+
+    #endregion Scrutor 扩展
 
     var app = builder.Build();
 
@@ -120,7 +169,7 @@ try
 
     app.MapControllers();
 
-    app.UseSerilogRequestLogging();
+    //app.UseSerilogRequestLogging();
     app.Run();
 }
 catch (Exception ex)

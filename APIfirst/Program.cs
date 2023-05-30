@@ -78,7 +78,7 @@ try
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    //builder.Services.AddSwaggerGen();
     builder.Services.AddScoped<DbRepository.IUnitWork, DbRepository.UnitWork>();
     builder.Services.AddScoped(typeof(DbRepository.IRepository<>), typeof(DbRepository.Repository<>));
     builder.Services.AddScoped(typeof(EFcoreRepository.IRepository<>), typeof(EFcoreRepository.Repository<>));
@@ -120,10 +120,9 @@ try
         };
     });
 
-
-
     //添加signalr 服务
     builder.Services.AddSignalR();
+
     #region Scrutor 扩展
 
     //builder.Services.Scan(
@@ -154,25 +153,34 @@ try
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        //app.UseSwagger();
+        //app.UseSwaggerUI();
     }
-  
+
     app.MapHub<SignalRhub>("/ChatHub", options =>
     {
         options.Transports =
             HttpTransportType.WebSockets |
             HttpTransportType.LongPolling;
     });
+
     //app.UseHttpsRedirection();
-   // 开启静态文件  将客户端代码写入wwwroot中  防止跨域
+    // 开启静态文件  将客户端代码写入wwwroot中  防止跨域
+    DefaultFilesOptions options = new DefaultFilesOptions();
+
+    options.DefaultFileNames.Clear();
+
+    options.DefaultFileNames.Add("index.html");
+
+    app.UseDefaultFiles(options);
     app.UseStaticFiles();
+
     app.UseAuthorization();
 
     app.MapControllers();
 
     //app.UseSerilogRequestLogging();
-    app.Run();
+    app.Run("http://*:5235");
 }
 catch (Exception ex)
 {

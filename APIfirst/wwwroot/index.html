@@ -5,6 +5,161 @@
     <title></title>
 </head>
 <body>
+    <div class="container">
+        <h2 style="text-align:center">登录</h2>
+        <div class="row p-1" style="text-align:center">
+            <span class="col-1">用户名</span>
+            <input type="text" id="userInput" />
+        </div>
+        <div class="row p-1" style="text-align: center; margin-top: 30px">
+            <input type="button" style="width: 80px; height: 40px;" id="loginButton" value="登录" />
+        </div>
 
+    </div>
+    <div class="liaotcont">
+        <span>聊天</span>
+        <div class="liaotcont1" style="border: solid 1px">
+            <div class="col-6">
+                <ul id="messagesList"></ul>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="send">
+        <input type="text" id="send" style=" height: 30px; width: 200px;" />
+        <input type="button" style="width: 80px; height: 40px;" id="sendButton" value="发送" />
+    </div>
+    <div class="online">
+        <span>在线人员</span>
+        <div class="online1" style="border: solid 1px">
+            <div class="col-6">
+                <ul id="userList"></ul>
+            </div>
+        </div>
+    </div>
+    <style>
+        .container {
+            width: 300px;
+            height: 200px;
+            position: absolute;
+            left: 20%;
+            top: 50%;
+            margin: -100px 0 0 -150px;
+            background-color: cadetblue;
+        }
+
+        .liaotcont {
+            width: 400px;
+            height: 500px;
+            position: absolute;
+            right: 45%;
+            top: 20%;
+            margin: -100px 0 0 -150px;
+        }
+
+        .liaotcont1 {
+            width: 400px;
+            height: 500px;
+            overflow: auto;
+        }
+
+        .online {
+            width: 200px;
+            height: 500px;
+            position: absolute;
+            right: 30%;
+            top: 20%;
+            margin: -100px 0 0 -150px;
+        }
+
+        .online1 {
+            width: 200px;
+            height: 500px;
+            overflow: auto;
+        }
+        .send {
+            width: 300px;
+            height: 100px;
+            position: absolute;
+            left: 45%;
+            top: 73%;
+            margin: -100px 0 0 -150px;
+        }
+    </style>
+    <script src="JS/microsoft-signalr/signalr.min.js"></script>
+    <script>
+        "use strict";
+        let nowuser = "";
+        var connection = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
+
+        //监听登录
+        document.getElementById("loginButton").addEventListener("click", function (event) {
+            var user = document.getElementById("userInput").value;
+            if (!user) {
+                alert("登录用户不能为空");
+            }
+            nowuser = user;
+            connection.invoke("Login", user).catch(function (err) {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        });
+        document.getElementById("loginButton").disabled = true;
+
+        //监听发送消息按钮
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            if (!nowuser) {
+                alert("未登录！");
+            }
+            var message = document.getElementById("send").value;
+            connection.invoke("SendPublicMessage", nowuser, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        });
+        //监听发送消息
+        connection.on("ReceivePublicMessage", function (user, message) {
+            var li = document.createElement("li");
+            document.getElementById("messagesList").appendChild(li);
+            li.textContent = `${user} ： ${message}`;
+        });
+
+        //退出
+        connection.on("exitlicMessageLogin", function (message) {
+            var li = document.createElement("li");
+            document.getElementById("messagesList").appendChild(li);
+            li.textContent = `${message}`;
+        });
+
+        //登录进入聊天室
+        connection.on("MessageLogin", function (message) {
+            var li = document.createElement("li");
+            li.style.color = "red";
+            document.getElementById("messagesList").appendChild(li);
+            // We can assign user-supplied strings to an element's textContent because it
+            // is not interpreted as markup. If you're assigning in any other way, you
+            // should be aware of possible script injection concerns.
+            li.textContent = `${message}`;
+        });
+
+        connection.on("dicUsers", function (data) {
+            document.getElementById("userList").innerHTML = "";
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    var li = document.createElement("li");
+                    document.getElementById("userList").appendChild(li);
+                    li.textContent = `${data[i]}`;
+                }
+            }
+        });
+        connection.start().then(function () {
+            document.getElementById("loginButton").disabled = false;
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+
+    </script>
 </body>
 </html>
